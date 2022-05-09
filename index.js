@@ -17,25 +17,25 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.hacav.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-client.connect(err => {
+// client.connect(err => {
   
-  console.log('mongodb connected');
+//   console.log('mongodb connected');
   
 
-  client.close();
-});
+//   client.close();
+// });
 
 
 async function run() {
     try {
         await client.connect();
-        const collection = client.db("theCarLand").collection("products");
+        const collection = client.db("carLand").collection("products");
 
-        app.get('/shop', async (req, res) => {
+        app.get('/products', async (req, res) => {
             const query = {};
             const cursor = collection.find(query);
-            const shops = await cursor.toArray();
-            res.send(shops);
+            const products = await cursor.toArray();
+            res.send(products);
         });
 
         // app.get('/service/:id', async(req, res) =>{
@@ -46,11 +46,11 @@ async function run() {
         // });
 
         // POST
-        // app.post('/service', async(req, res) =>{
-        //     const newService = req.body;
-        //     const result = await serviceCollection.insertOne(newService);
-        //     res.send(result);
-        // });
+        app.post('/service', async(req, res) =>{
+            const newService = req.body;
+            const result = await collection.insertOne(newService);
+            res.send(result);
+        });
 
         // DELETE
         // app.delete('/service/:id', async(req, res) =>{
@@ -68,13 +68,7 @@ async function run() {
 
 run().catch(console.dir);
 
-app.get('/', (req, res) => {
-    res.send('Running Genius Server');
-});
 
-app.listen(port, () => {
-    console.log('Listening to port', port);
-})
 
 
 app.get('/',(req,res)=>{
