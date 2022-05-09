@@ -32,21 +32,21 @@ async function run() {
             res.send(products);
         });
 
-        // app.get('/service/:id', async(req, res) =>{
-        //     const id = req.params.id;
-        //     const query={_id: ObjectId(id)};
-        //     const service = await serviceCollection.findOne(query);
-        //     res.send(service);
-        // });
+        app.get('/products/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query={_id: ObjectId(id)};
+            const service = await collection.findOne(query);
+            res.send(service);
+        });
 
-        // POST
-        app.post('/service', async(req, res) =>{
+        // POST:::::::::
+        app.post('/products', async(req, res) =>{
             const newService = req.body;
             const result = await collection.insertOne(newService);
             res.send(result);
         });
 
-       // DELETE
+       // DELETE:::::::::::
         app.delete('/products/:id', async(req, res) =>{
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
