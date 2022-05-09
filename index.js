@@ -18,13 +18,63 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clu
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 client.connect(err => {
-  const collection = client.db("test").collection("devices");
+  
   console.log('mongodb connected');
-  // perform actions on the collection object
+  
+
   client.close();
 });
 
 
+async function run() {
+    try {
+        await client.connect();
+        const collection = client.db("theCarLand").collection("products");
+
+        app.get('/shop', async (req, res) => {
+            const query = {};
+            const cursor = collection.find(query);
+            const shops = await cursor.toArray();
+            res.send(shops);
+        });
+
+        // app.get('/service/:id', async(req, res) =>{
+        //     const id = req.params.id;
+        //     const query={_id: ObjectId(id)};
+        //     const service = await serviceCollection.findOne(query);
+        //     res.send(service);
+        // });
+
+        // POST
+        // app.post('/service', async(req, res) =>{
+        //     const newService = req.body;
+        //     const result = await serviceCollection.insertOne(newService);
+        //     res.send(result);
+        // });
+
+        // DELETE
+        // app.delete('/service/:id', async(req, res) =>{
+        //     const id = req.params.id;
+        //     const query = {_id: ObjectId(id)};
+        //     const result = await serviceCollection.deleteOne(query);
+        //     res.send(result);
+        // });
+
+    }
+    finally {
+
+    }
+}
+
+run().catch(console.dir);
+
+app.get('/', (req, res) => {
+    res.send('Running Genius Server');
+});
+
+app.listen(port, () => {
+    console.log('Listening to port', port);
+})
 
 
 app.get('/',(req,res)=>{
