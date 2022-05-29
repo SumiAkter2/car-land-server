@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -19,37 +19,76 @@ async function run() {
     try {
         await client.connect();
         const collection = client.db("carLand").collection("products");
-        const orderCollection = client.db("carLand").collection("orders");
 
-        app.get('/products', async (req, res) => {
+        // item api
+        app.get("/product", async (req, res) => {
             const query = {};
             const cursor = collection.find(query);
-            const products = await cursor.toArray();
-            res.send(products);
-        });
-        //comment
-        app.get('/products/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const service = await collection.findOne(query);
-            res.send(service);
+            const items = await cursor.toArray();
+            res.send(items);
         });
 
-        // POST:::::::::
-        app.post('/orders', async (req, res) => {
-            const newService = req.body;
-            const result = await collection.insertOne(newService);
+        app.get("/product/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const item = await collection.findOne(query);
+            res.send(item);
+        });
+
+        app.get("/myItems", async (req, res) => {
+
+            const email = req.query;
+            console.log(email);
+            console.log('hi');
+
+            const query = {};
+            const cursor = collection.find(query);
+            const myItems = await cursor.toArray();
+            res.send(myItems);
+
+        });
+
+        //post api
+        app.post("/product", async (req, res) => {
+            const newItem = req.body;
+            const result = await collection.insertOne(newItem);
             res.send(result);
         });
 
-        // DELETE:::::::::::
-        app.delete('/products/:id', async (req, res) => {
+        //Delete Api
+        app.delete("/product/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await collection.deleteOne(query);
             res.send(result);
         });
 
+        //Delete MyItem api
+        app.delete("/myItems/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await collection.deleteOne(query);
+            res.send(result);
+        });
+
+        // Update quantity api
+        app.put("/quantity/:id", async (req, res) => {
+            const id = req.params.id;
+            const data = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    quantity: data.quantity,
+                },
+            };
+            const result = await collection.updateOne(
+                filter,
+                updateDoc,
+                options
+            );
+            res.send(result);
+        });
     }
     finally {
 
